@@ -1,0 +1,27 @@
+# .gitignore
+
+# generated build files
+autom4te.cache/
+autoscan.log
+build-aux/
+aclocal.m4
+ChangeLog
+config.log
+config.status
+configure
+configure.scan
+envconf-release
+libtool
+INSTALL
+Makefile
+Makefile.in
+stamp-h1
+.deps/
+.libs/
+*.l[oa]
+*.gz
+*.bz2
+.version
+
+# vim config files
+.gvimrc
