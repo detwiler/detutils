@@ -10,7 +10,7 @@ config.log
 config.status
 configure
 configure.scan
-envconf-release
+detutils-release
 libtool
 INSTALL
 Makefile

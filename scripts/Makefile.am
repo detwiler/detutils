@@ -2,16 +2,6 @@
 
 include $(top_srcdir)/rules.mk
 
-SUBDIRS =
-
-if HAVE_SED
-SUBDIRS += sed
-endif HAVE_SED
-
-if HAVE_VIM
-SUBDIRS += vim
-endif HAVE_VIM
-
 # static data/scripts (require explicit distribution)
 static_data =
 
@@ -38,10 +28,6 @@ pkgdata_DATA = $(conf_data)
 conf_scripts = dl-gnu-tool \
 	       gen-pass \
 	       upper2lower
-
-if HAVE_S3CMD
-conf_scripts += s3
-endif HAVE_S3CMD
 
 pkgdata_SCRIPTS = $(conf_scripts)
 
@@ -90,28 +76,8 @@ mk-script-links: mk-bindir
 	    test -e $$s || $(LN_S) $(DESTDIR)$(pkgdatadir)/$$s; \
 	  done
 
-gnulib_tool = gnulib-tool
-
-$(gnulib_tool): mk-bindir
-	$(AM_V_GEN)cd $(DESTDIR)$(bindir) && \
-	  test -e $@ || $(LN_S) $(GNULIB_SRCDIR)/$@
-
-vc_list_files = vc-list-files
-
-$(vc_list_files): mk-bindir
-	$(AM_V_GEN)cd $(DESTDIR)$(bindir) && \
-	  test -e $@ || $(LN_S) $(GNULIB_SRCDIR)/build-aux/$@
-
-gnulib_scripts = $(gnulib_tool) \
-		 $(vc_list_files)
-
 install_data_targets = mk-script-links
 uninstall_files = $(scripts)
-
-if WITH_GNULIB_SRCDIR
-install_data_targets += $(gnulib_scripts)
-uninstall_files += $(gnulib_scripts)
-endif
 
 install-data-hook: $(install_data_targets)
 uninstall-hook:
