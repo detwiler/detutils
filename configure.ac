@@ -30,6 +30,11 @@ AC_CHECK_PROGS([BASE64], [base64 gbase64], [no])
 AS_IF([test "x$BASE64" = xno],
       [AC_MSG_ERROR([could not find GNU coreutils base64])])
 
+AC_ARG_VAR([CSCOPEPRG], [path to cscope])
+AC_CHECK_PROGS([CSCOPEPRG], [cscope], [no])
+AS_IF([test "x$CSCOPEPRG" = xno],
+      [AC_MSG_ERROR([could not find cscope])])
+
 AC_CACHE_CHECK([for cut that supports --delimiter], [ac_cv_path_CUT],
   [AC_PATH_PROGS_FEATURE_CHECK([CUT], [cut gcut],
     [$ac_path_CUT --delimiter=' ' --fields=1 </dev/null &>/dev/null \
@@ -142,6 +147,7 @@ AC_SUBST([GNU_BASE_URL], [$with_gnu_base_url])
 AC_CONFIG_FILES([Makefile
                  scripts/Makefile
                  scripts/config-bash
+                 scripts/makecscope
                  scripts/script-functions
                  scripts/upper2lower
                  ])

@@ -7,8 +7,7 @@ static_data =
 
 dist_pkgdata_DATA = $(static_data)
 
-static_scripts = makecscope \
-		 mini \
+static_scripts = mini \
 		 nixify \
 		 pattmv \
 		 space2hyphen \
@@ -22,7 +21,8 @@ conf_data = config-bash \
 
 pkgdata_DATA = $(conf_data)
 
-conf_scripts = upper2lower
+conf_scripts = makecscope \
+	       upper2lower
 
 pkgdata_SCRIPTS = $(conf_scripts)
 

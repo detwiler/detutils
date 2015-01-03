@@ -1,19 +1,22 @@
-#! /bin/env bash
+#! @ENV@ bash
+# vim: ft=sh
 
 # functions
 
 function usage()
 {
-	cat <<- eof
+	cat <<- EOF
 
-	Usage: ${0##*/} <dir>...
+	Usage: $me <dir>...
 
 	Examples:
 
-	  ${0##*/} include source
+	  $me include source
 
-	eof
+	EOF
 } # usage()
+
+me="$(basename $0)"
 
 dirs="$@"
 
@@ -26,4 +29,4 @@ bad="-name SCCS -o -name BitKeeper -o -name .svn -o -name CVS -o -name .pc"
 ( find $dirs -follow \( $bad \) -prune -o \( -name "*.[ch]" -o \
   -name "*.[ch]pp" -o -name "*.cc" -o -name "*.hh" \) -print ) >| cscope.files
 
-cscope -b -q
+@CSCOPEPRG@ -b -q
