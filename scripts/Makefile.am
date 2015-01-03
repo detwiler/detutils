@@ -9,7 +9,6 @@ dist_pkgdata_DATA = $(static_data)
 
 static_scripts = fics \
 		 get-autotools \
-		 get-gnu-tool \
 		 makecscope \
 		 mini \
 		 nixify \
@@ -25,8 +24,7 @@ conf_data = config-bash \
 
 pkgdata_DATA = $(conf_data)
 
-conf_scripts = dl-gnu-tool \
-	       gen-pass \
+conf_scripts = gen-pass \
 	       upper2lower
 
 pkgdata_SCRIPTS = $(conf_scripts)
@@ -45,7 +43,9 @@ make_data =
 pkgdata_DATA += $(make_data)
 
 make_scripts = dl-git \
-	       get-git
+	       dl-gnu-tool \
+	       get-git \
+	       get-gnu-tool
 
 pkgdata_SCRIPTS += $(make_scripts)
 
@@ -57,8 +57,14 @@ make_sources = $(addsuffix .in,$(make_scripts) $(make_data))
 EXTRA_DIST += $(make_sources)
 
 # sed command to build data/scripts
-EDIT = -e 's:@pkgdatadir[@]:$(pkgdatadir):g' \
-       -e 's:@GPG[@]:$(GPG):g'
+EDIT = -e 's:@ENV[@]:$(ENV):g' \
+       -e 's;@GIT_BASE_URL[@];$(GIT_BASE_URL);g' \
+       -e 's;@GNU_BASE_URL[@];$(GNU_BASE_URL);g' \
+       -e 's:@GPG[@]:$(GPG):g' \
+       -e 's:@MKTEMP[@]:$(MKTEMP):g' \
+       -e 's:@pkgdatadir[@]:$(pkgdatadir):g' \
+       -e 's:@WGET[@]:$(WGET):g' \
+       -e 's:@ZCAT[@]:$(ZCAT):g'
 
 # data/scripts built by make should depend on the Makefile
 $(make_data) $(make_scripts): Makefile

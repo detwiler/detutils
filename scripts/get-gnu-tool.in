@@ -1,0 +1,131 @@
+#! @ENV@ bash
+# vim: ft=sh
+
+set -o pipefail
+
+# functions
+
+source @pkgdatadir@/script-functions
+
+function usage()
+{
+	cat <<- eof
+
+	Usage: $me -g <version> [OPTIONS] <tool>
+
+	  -g version
+	  -p prefix
+	  -e exec-prefix
+	  -c extra configure flags
+	  -C file with extra configure flags
+	  -m extra make flags
+	  -M file with extra make flags
+	  -j make jobs
+	  -v verbose output
+	  -V print version
+	  -h print usage
+
+	Examples:
+
+	$me -g 2.68 -p $HOME/usr -e $HOME/usr/\$(arch) -j 4 autoconf
+
+	eof
+} # usage()
+
+function cleanup()
+{
+  rm -rf $@
+}
+
+me="$(basename $0)"
+verbose=''
+prefix=''
+exec_prefix=''
+configflags=''
+makeflags=''
+makejobs=''
+
+while getopts 'g:p:e:c:C:m:M:j:vVh' opt; do
+  case $opt in
+    g ) version=$OPTARG ;;
+    p ) prefix="--prefix=$OPTARG" ;;
+    e ) exec_prefix="--exec-prefix=$OPTARG" ;;
+    c ) configflags="$configflags $OPTARG" ;;
+    C ) configflags="$configflags $(cat $OPTARG | tr '\n' ' ')" ;;
+    m ) makeflags="$makeflags $OPTARG" ;;
+    M ) makeflags="$makeflags $(cat $OPTARG | tr '\n' ' ')" ;;
+    j ) makejobs="--jobs=$OPTARG" ;;
+    v ) verbose='-v' ;;
+    V ) print_version $me; exit 0 ;;
+    h ) usage; exit 0 ;;
+    \? ) usage >/dev/stderr; exit 1 ;;
+  esac
+done
+
+shift $(($OPTIND - 1))
+
+if [[ -z $version ]]; then
+  die 'Must specify version with -g'
+fi
+
+tool=$1
+
+if [[ -z $tool ]]; then
+  die 'Must specify tool argument'
+fi
+
+if ! tmpdir=$(@MKTEMP@ --directory); then
+  die 'Failed to create temporary directory'
+fi
+trap "cleanup $tmpdir" ERR EXIT
+
+if ! pushd $tmpdir &>/dev/null; then
+  die "Failed to change to temporary directory $tmpdir"
+fi
+
+toolname="$tool-$version"
+archive="$toolname.tar.gz"
+
+if ! dl-gnu-tool $verbose -g $version $tool; then
+  popd &>/dev/null
+  die "Failed to download $tool"
+fi
+
+if ! tar -xzf $archive; then
+  popd &>/dev/null
+  die "Failed to extract $archive"
+fi
+
+if ! pushd $toolname; then
+  popd &>/dev/null
+  die "Failed to change directory to $toolname"
+fi
+
+debug "Running ./configure $prefix $exec_prefix $configflags"
+
+if ! eval ./configure $prefix $exec_prefix $configflags; then
+  popd &>/dev/null
+  popd &>/dev/null
+  die "Failed to configure $toolname"
+fi
+
+debug "Running make $makejobs $makeflags"
+
+if ! eval make $makejobs $makeflags; then
+  popd &>/dev/null
+  popd &>/dev/null
+  die "Failed to make $toolname"
+fi
+
+debug "Running make $makejobs $makeflags install"
+
+if ! eval make $makejobs $makeflags install; then
+  popd &>/dev/null
+  popd &>/dev/null
+  die "Failed to install $toolname"
+fi
+
+popd &>/dev/null
+popd &>/dev/null
+
+debug "Successfully installed $toolname"

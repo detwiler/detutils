@@ -1,4 +1,4 @@
-# detutils.m4
+# det.m4
 #
 # convenience functions
 

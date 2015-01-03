@@ -1,4 +1,7 @@
-#! /bin/env bash
+#! @ENV@ bash
+# vim: ft=sh
+
+set -o pipefail
 
 # functions
 
@@ -28,7 +31,7 @@ verbose=''
 while getopts 'g:vVh' opt; do
   case $opt in
     g ) version=$OPTARG ;;
-    v ) verbose='-v' ;;
+    v ) verbose='true' ;;
     V ) print_version $me; exit 0 ;;
     h ) usage; exit 0 ;;
     \? ) usage >/dev/stderr; exit 1 ;;
@@ -41,8 +44,8 @@ if [[ -z $version ]]; then
   die "Must specify git version with -g"
 fi
 
-baseurl="http://www.kernel.org/pub/software/scm"
-tool="git"
+baseurl='@GIT_BASE_URL@'
+tool='git'
 toolname="$tool-$version"
 archive="$toolname.tar"
 comparchive="$archive.gz"
@@ -50,15 +53,15 @@ signature="$archive.sign"
 url="$baseurl/$tool/$comparchive"
 signurl="$baseurl/$tool/$signature"
 
-if ! wget $url; then
+if ! @WGET@ $url; then
   die "Failed to download $url"
 fi
 
-if ! wget $signurl; then
+if ! @WGET@ $signurl; then
   die "Failed to download $signurl"
 fi
 
-if ! zcat $comparchive | @GPG@ --keyserver-options auto-key-retrieve \
+if ! @ZCAT@ $comparchive | @GPG@ --keyserver-options auto-key-retrieve \
   --verify $signature -; then
   die "Failed to verfiy signature $signature"
 fi

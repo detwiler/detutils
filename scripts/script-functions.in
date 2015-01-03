@@ -8,44 +8,74 @@ function print_version()
 } # print_version()
 
 # borrowed from gnulib
-# warnf_ FORMAT-STRING ARG1...
-function warnf_ ()
+# msgf_ FORMAT-STRING ARG1...
+function msgf_ ()
 {
-  local warnf_format_="$1"
+  local msgf_format_="$1"
   shift
   local nl='
 '
   case $* in
     *$nl*) me_=$(printf "$me"|tr "$nl|" '??')
-       printf "$warnf_format_" "$@" | sed "s|^|$me_: |" ;;
-    *) printf "$me: $warnf_format_" "$@" ;;
-  esac >/dev/stderr
-} # warnf_
+       printf "$msgf_format_" "$@" | sed "s|^|$me_: |" ;;
+    *) printf "$me: $msgf_format_" "$@" ;;
+  esac
+} # msgf_
+export -f msgf_
+
+# borrowed from gnulib
+# msg_ WORD1...
+function msg_ ()
+{
+  # If IFS does not start with ' ', set it and emit the message in a subshell.
+  case $IFS in
+    ' '*) msgf_ '%s\n' "$*";;
+    *)    (IFS=' '; msg_ "$@");;
+  esac
+} # msg_
+export -f msg_
 
 # borrowed from gnulib
 # warn_ WORD1...
 function warn_ ()
 {
-  # If IFS does not start with ' ', set it and emit the warning in a subshell.
-  case $IFS in
-    ' '*) warnf_ '%s\n' "$*";;
-    *)    (IFS=' '; warn_ "$@");;
-  esac
+  msg_ "$@" >/dev/stderr
 } # warn_
+export -f warn_
 
 # borrowed from gnulib
 # die WORD1...
 function die() { warn_ "$@"; exit 1; }
 
+# based on gnulib
+# info_ WORD1...
+function info_ ()
+{
+  msg_ "$@" >/dev/stdout
+} # info_
+export -f info_
+
 # usage: debug 'some message'
 #
-# make sure 'verbose' is set accordingly in your script
+# make sure 'verbose' and 'me' are set accordingly in your script
 function debug()
+{
+  if [[ -n $verbose ]]; then
+    info_ "$@"
+  fi
+} # debug()
+export -f debug
+
+# usage: debug_err 'some message'
+#
+# make sure 'verbose' and 'me' set accordingly in your script
+function debug_err()
 {
   if [[ -n $verbose ]]; then
     warn_ "$@"
   fi
-} # debug()
+} # debug_err()
+export -f debug_err
 
 # usage: remote_cmd <node> <cmd>
 #

@@ -7,5 +7,6 @@ dl-gnu-tool
 script-functions
 gen-pass
 get-git
+get-gnu-tool
 s3
 upper2lower
