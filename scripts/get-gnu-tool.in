@@ -9,7 +9,7 @@ source @pkgdatadir@/script-functions
 
 function usage()
 {
-	cat <<- eof
+	cat <<- EOF
 
 	Usage: $me -g <version> [OPTIONS] <tool>
 
@@ -29,7 +29,7 @@ function usage()
 
 	$me -g 2.68 -p $HOME/usr -e $HOME/usr/\$(arch) -j 4 autoconf
 
-	eof
+	EOF
 } # usage()
 
 function cleanup()
