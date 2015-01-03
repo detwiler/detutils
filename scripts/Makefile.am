@@ -23,8 +23,7 @@ conf_data = config-bash \
 
 pkgdata_DATA = $(conf_data)
 
-conf_scripts = gen-pass \
-	       upper2lower
+conf_scripts = upper2lower
 
 pkgdata_SCRIPTS = $(conf_scripts)
 
@@ -43,6 +42,7 @@ pkgdata_DATA += $(make_data)
 
 make_scripts = dl-git \
 	       dl-gnu-tool \
+	       gen-pass \
 	       get-git \
 	       get-gnu-tool
 
@@ -56,13 +56,27 @@ make_sources = $(addsuffix .in,$(make_scripts) $(make_data))
 EXTRA_DIST += $(make_sources)
 
 # sed command to build data/scripts
-EDIT = -e 's:@ENV[@]:$(ENV):g' \
+EDIT = -e 's:@ASCII85[@]:$(ASCII85):g' \
+       -e 's:@BASE64[@]:$(BASE64):g' \
+       -e 's:@ENV[@]:$(ENV):g' \
+       -e 's:@CUT[@]:$(CUT):g' \
+       -e 's:@HEAD[@]:$(HEAD):g' \
        -e 's;@GIT_BASE_URL[@];$(GIT_BASE_URL);g' \
        -e 's;@GNU_BASE_URL[@];$(GNU_BASE_URL);g' \
        -e 's:@GPG[@]:$(GPG):g' \
        -e 's:@MKTEMP[@]:$(MKTEMP):g' \
        -e 's:@pkgdatadir[@]:$(pkgdatadir):g' \
+       -e 's:@SHA1SUM[@]:$(SHA1SUM):g' \
+       -e 's:@SHA224SUM[@]:$(SHA224SUM):g' \
+       -e 's:@SHA256SUM[@]:$(SHA256SUM):g' \
+       -e 's:@SHA384SUM[@]:$(SHA384SUM):g' \
+       -e 's:@SHA512SUM[@]:$(SHA512SUM):g' \
+       -e 's:@STAT[@]:$(STAT):g' \
+       -e 's:@TAIL[@]:$(TAIL):g' \
+       -e 's:@TR[@]:$(TR):g' \
+       -e 's:@UUENCODE[@]:$(UUENCODE):g' \
        -e 's:@WGET[@]:$(WGET):g' \
+       -e 's:@XXD[@]:$(XXD):g' \
        -e 's:@ZCAT[@]:$(ZCAT):g'
 
 # data/scripts built by make should depend on the Makefile

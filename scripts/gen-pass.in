@@ -1,40 +1,54 @@
-#! /bin/env bash
+#! @ENV@ bash
+# vim: ft=sh
+
+set -o pipefail
 
 # functions
 
+source @pkgdatadir@/script-functions
+
 function usage()
 {
-	cat <<- eof
+	cat <<- EOF
 
-	Usage: $(basename $0) [-p <prologue>] [-s <salt>] [-e <epilogue>] \\
-	  [-a <hash-algorithm>] [-r <bytes>] [-i <byte>] [-f <bytes>] \\
-	  [-t] [-u | -b | -c]
+	Usage: $me \\
+	         [-s <salt>] \\
+	         [-a <hash-algorithm>] \\
+	         [-p <prologue>] \\
+	         [-e <epilogue>] \\
+	         [-r <bytes>] \\
+	         [-i <byte>] \\
+	         [-f <bytes>] \\
+	         [-t] \\
+	         [-u | -b | -c]
 
-	  -p proloque
-	  -s salt (if neither -s nor -r specified, user will be prompted)
-	  -e epilogue
 	  -a secure hash algorithm [1|224|256|384|512] (default: SHA-1)
-	  -r use ARG bytes of random salt
-	  -i initial byte of digest to begin with
-	  -f discard ARG final bytes of digest
-	  -t convert digest to text
-	  -u uuencode digest
 	  -b base64 encode digest
 	  -c ascii85 encode digest
+	  -e epilogue
+	  -f discard ARG final bytes of digest
+	  -i initial byte of digest to begin with
+	  -p proloque
+	  -r use ARG bytes of random salt
+	  -s salt (if neither -s nor -r specified, user will be prompted)
+	  -t convert digest to text
+	  -u uuencode digest
+	  -V print version
+	  -h print usage
 
 	Examples:
 
-	$(basename $0) -p foo -e bar -a 224 -r 32 -t -u
+	$me -p foo -e bar -a 224 -r 32 -t -u
 
-	eof
+	EOF
 } # usage()
 
 function cleanup()
 {
-  local size="$(stat --printf='%s' $message)"
-  head --bytes=$size /dev/urandom >$message
-  size="$(stat --printf='%s' $digest)"
-  head --bytes=$size /dev/urandom >$digest
+  local size="$(@STAT@ --printf='%s' $message)"
+  @HEAD@ --bytes=$size /dev/urandom >$message
+  size="$(@STAT@ --printf='%s' $digest)"
+  @HEAD@ --bytes=$size /dev/urandom >$digest
   rm -f $message $digest
 } # cleanup()
 
@@ -44,11 +58,12 @@ function get_salt()
   read -s -p 'Confirm salt: ' check
 
   if [[ $salt != $check ]]; then
-    echo 'Salt entries did not match!' >/dev/stderr
-    exit 1
+    die 'Salt entries did not match!'
   fi
 } # get_salt()
 
+me="$(basename $0)"
+verbose=''
 salt=''
 prologue=''
 epilogue=''
@@ -62,7 +77,7 @@ base64=''
 ascii85=''
 encode=''
 
-while getopts "p:s:e:a:r:i:f:tubch" opt; do
+while getopts 'p:s:e:a:r:i:f:tubchVh' opt; do
   case $opt in
     p ) prologue=$OPTARG ;;
     s ) salt=$OPTARG ;;
@@ -75,7 +90,8 @@ while getopts "p:s:e:a:r:i:f:tubch" opt; do
     u ) uuencode='true' ;;
     b ) base64='true' ;;
     c ) ascii85='true' ;;
-    h ) usage >/dev/stderr; exit 0 ;;
+    V ) print_version $me; exit 0 ;;
+    h ) usage; exit 0 ;;
     \? ) usage >/dev/stderr; exit 1 ;;
   esac
 done
@@ -83,14 +99,12 @@ done
 shift $(($OPTIND - 1))
 
 if [[ -n $uuencode && ( -n $base64 || -n $ascii85 ) ]]; then
-  echo 'Only one encoding may be selected!' >/dev/stderr
-  exit 1
+  die 'Only one encoding may be selected!'
 fi
 
 if [[ -n $base64 ]]; then
   if [[ -n $ascii85 ]]; then
-    echo 'Only one encoding may be selected!' >/dev/stderr
-    exit 1
+    die 'Only one encoding may be selected!'
   fi
   encode=@BASE64@
 fi
@@ -108,7 +122,7 @@ if [[ -n $sha ]]; then
     256 ) shacmd=@SHA256SUM@ ;;
     224 ) shacmd=@SHA224SUM@ ;;
     1 ) shacmd=@SHA1SUM@ ;;
-    * ) usage >/dev/stderr; exit 1 ;;
+    * ) die "Unsupported SHA algorithm $sha" ;;
   esac
 fi
 
@@ -120,8 +134,7 @@ digest_size[@SHA384SUM@]=48
 digest_size[@SHA512SUM@]=64
 
 if (( ${digest_size[$shacmd]} <= $initial + $final - 1 )); then
-  echo "You've discarded all ${digest_size[$shacmd]} digest bytes!" >/dev/stderr
-  exit 1
+  die "You've discarded all ${digest_size[$shacmd]} digest bytes!"
 fi
   
 if [[ -z $salt && -z $random ]]; then
@@ -129,13 +142,13 @@ if [[ -z $salt && -z $random ]]; then
 fi
 
 # message buffer
-message=$(mktemp)
+message=$(@MKTEMP@)
 
 # digest buffer
-digest=$(mktemp)
+digest=$(@MKTEMP@)
 
 # cleanup on exit
-trap cleanup ERR EXIT RETURN INT QUIT TERM
+trap cleanup ERR EXIT
 
 if [[ -n $prologue ]]; then
   printf '%s' "$prologue" >>$message
@@ -146,15 +159,15 @@ if [[ -n $salt ]]; then
 fi
 
 if [[ -n $random ]]; then
-  head --bytes=$random /dev/urandom >>$message
+  @HEAD@ --bytes=$random /dev/urandom >>$message
 fi
 
 if [[ -n $epilogue ]]; then
   printf '%s' "$epilogue" >>$message
 fi
 
-$shacmd $message | cut --delimiter=' ' --fields=1 | @XXD@ -r -p | \
-  head --bytes=-$final | tail --bytes=+$initial >$digest
+$shacmd $message | @CUT@ --delimiter=' ' --fields=1 | @XXD@ -r -p | \
+  @HEAD@ --bytes=-$final | @TAIL@ --bytes=+$initial >$digest
 
 if [[ -n $text ]]; then
   # reuse message buffer
@@ -165,7 +178,7 @@ else
 fi
 
 if [[ -n $uuencode ]]; then
-  @UUENCODE@ $output /dev/stdout | sed -e '1d' -e '$d' | tr --delete '\n'
+  @UUENCODE@ $output /dev/stdout | sed -e '1d' -e '$d' | @TR@ --delete '\n'
 elif [[ -n $encode ]]; then
   $encode --wrap=0 $output
 else

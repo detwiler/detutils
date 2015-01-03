@@ -30,6 +30,13 @@ AC_CHECK_PROGS([BASE64], [base64 gbase64], [no])
 AS_IF([test "x$BASE64" = xno],
       [AC_MSG_ERROR([could not find GNU coreutils base64])])
 
+AC_CACHE_CHECK([for cut that supports --delimiter], [ac_cv_path_CUT],
+  [AC_PATH_PROGS_FEATURE_CHECK([CUT], [cut gcut],
+    [$ac_path_CUT --delimiter=' ' --fields=1 </dev/null &>/dev/null \
+      && ac_cv_path_CUT=$ac_path_CUT ac_path_CUT_found=:],
+    [AC_MSG_ERROR([could not find cut that supports --delimiter])])])
+AC_SUBST([CUT], [$ac_cv_path_CUT])
+
 AC_ARG_VAR([ENV], [path to env])
 AC_PATH_PROG([ENV], [env], [no])
 AS_IF([test "x$ENV" = xno],
@@ -39,6 +46,13 @@ AC_ARG_VAR([GPG], [GNU gpg])
 AC_CHECK_PROGS([GPG], [gpg2 gpg], [no])
 AS_IF([test "x$GPG" = xno],
       [AC_MSG_ERROR([could not find GNU gpg])])
+
+AC_CACHE_CHECK([for head that supports --bytes], [ac_cv_path_HEAD],
+  [AC_PATH_PROGS_FEATURE_CHECK([HEAD], [head ghead],
+    [$ac_path_HEAD --bytes=1 </dev/null &>/dev/null \
+      && ac_cv_path_HEAD=$ac_path_HEAD ac_path_HEAD_found=:],
+    [AC_MSG_ERROR([could not find head that supports --bytes])])])
+AC_SUBST([HEAD], [$ac_cv_path_HEAD])
 
 AC_CACHE_CHECK([for mktemp that supports --directory], [ac_cv_path_MKTEMP],
   [AC_PATH_PROGS_FEATURE_CHECK([MKTEMP], [mktemp gmktemp],
@@ -71,6 +85,27 @@ AC_ARG_VAR([SHA512SUM], [GNU coreutils sha512sum])
 AC_CHECK_PROGS([SHA512SUM], [sha512sum gsha512sum], [no])
 AS_IF([test "x$SHA512SUM" = xno],
       [AC_MSG_ERROR([could not find GNU coreutils sha512sum])])
+
+AC_CACHE_CHECK([for stat that supports --printf], [ac_cv_path_STAT],
+  [AC_PATH_PROGS_FEATURE_CHECK([STAT], [stat gstat],
+    [$ac_path_STAT --printf='%s' /dev/null &>/dev/null \
+      && ac_cv_path_STAT=$ac_path_STAT ac_path_STAT=:],
+    [AC_MSG_ERROR([could not find stat that supports --printf])])])
+AC_SUBST([STAT], [$ac_cv_path_STAT])
+
+AC_CACHE_CHECK([for tail that supports --bytes], [ac_cv_path_TAIL],
+  [AC_PATH_PROGS_FEATURE_CHECK([TAIL], [tail gtail],
+    [$ac_path_TAIL --bytes=1 </dev/null &>/dev/null \
+      && ac_cv_path_TAIL=$ac_path_TAIL ac_path_TAIL_found=:],
+    [AC_MSG_ERROR([could not find tail that supports --bytes])])])
+AC_SUBST([TAIL], [$ac_cv_path_TAIL])
+
+AC_CACHE_CHECK([for tr that supports --delete], [ac_cv_path_TR],
+  [AC_PATH_PROGS_FEATURE_CHECK([TR], [tr gtr],
+    [$ac_path_TR --delete ' ' </dev/null &>/dev/null \
+      && ac_cv_path_TR=$ac_path_TR ac_path_TR_found=:],
+    [AC_MSG_ERROR([could not find tr that supports --delete])])])
+AC_SUBST([TR], [$ac_cv_path_TR])
 
 AC_ARG_VAR([UUENCODE], [path to uuencode])
 AC_CHECK_PROGS([UUENCODE], [uuencode], [no])
@@ -108,7 +143,6 @@ AC_CONFIG_FILES([Makefile
                  scripts/Makefile
                  scripts/config-bash
                  scripts/script-functions
-                 scripts/gen-pass
                  scripts/upper2lower
                  ])
 
