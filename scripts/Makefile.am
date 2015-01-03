@@ -7,8 +7,7 @@ static_data =
 
 dist_pkgdata_DATA = $(static_data)
 
-static_scripts = get-autotools \
-		 makecscope \
+static_scripts = makecscope \
 		 mini \
 		 nixify \
 		 pattmv \
@@ -43,6 +42,7 @@ pkgdata_DATA += $(make_data)
 make_scripts = dl-git \
 	       dl-gnu-tool \
 	       gen-pass \
+	       get-autotools \
 	       get-git \
 	       get-gnu-tool
 

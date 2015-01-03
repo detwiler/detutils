@@ -6,6 +6,7 @@ dl-git
 dl-gnu-tool
 script-functions
 gen-pass
+get-autotools
 get-git
 get-gnu-tool
 s3
