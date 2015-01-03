@@ -7,8 +7,7 @@ static_data =
 
 dist_pkgdata_DATA = $(static_data)
 
-static_scripts = fics \
-		 get-autotools \
+static_scripts = get-autotools \
 		 makecscope \
 		 mini \
 		 nixify \
