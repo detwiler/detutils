@@ -40,11 +40,11 @@ AC_CHECK_PROGS([GPG], [gpg2 gpg], [no])
 AS_IF([test "x$GPG" = xno],
       [AC_MSG_ERROR([could not find GNU gpg])])
 
-AC_CACHE_CHECK([GNU coreutils mktemp], [ac_cv_path_MKTEMP],
+AC_CACHE_CHECK([for mktemp that supports --directory], [ac_cv_path_MKTEMP],
   [AC_PATH_PROGS_FEATURE_CHECK([MKTEMP], [mktemp gmktemp],
     [$ac_path_MKTEMP --dry-run --directory &>/dev/null \
       && ac_cv_path_MKTEMP=$ac_path_MKTEMP ac_path_MKTEMP=:],
-    [AC_MSG_ERROR([could not find GNU coreutils mktemp])])])
+    [AC_MSG_ERROR([could not find mktemp that supports --directory])])])
 AC_SUBST([MKTEMP], [$ac_cv_path_MKTEMP])
 
 AC_ARG_VAR([SHA1SUM], [GNU coreutils sha1sum])
