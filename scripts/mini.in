@@ -1,0 +1,65 @@
+#! @ENV@ bash
+# vim: ft=sh
+
+set -o pipefail
+
+# functions
+
+source @pkgdatadir@/script-functions
+
+function usage()
+{
+	cat <<- EOF
+
+	Usage: $me [-p <port>] [-d <dir>]
+
+	  -p device port
+	  -d directory to place capture files
+
+	Examples:
+
+	   $me -p usb0 -d /var/log/minicom
+
+	EOF
+} # usage()
+
+# constant variables
+date_format='+%Y%m%d-%H%M%S'
+suffix='.log'
+options='--wrap'
+
+
+# variables
+directory=''
+port=''
+
+# process command line options
+while getopts ':p:d:Vh' opt; do
+  case $opt in
+    d ) directory="$OPTARG";;
+    p ) port="$OPTARG";;
+    V ) print_version $me; exit 0 ;;
+    h ) usage; exit 0 ;;
+    \? ) usage >/dev/stderr; exit 1 ;;
+  esac
+done
+
+shift $(($OPTIND - 1))
+
+if [[ -z $port ]]; then
+  die 'You must specify a port with -p'
+fi
+
+if [[ -z $directory ]]; then
+  die 'You must specify a log directory with -d'
+fi
+
+if [[ ! -d $directory ]]; then
+  die "$directory is not a directory"
+fi
+
+capturefile="${directory%/}/$port-$(date $date_format)$suffix"
+
+options="$options --capturefile=$capturefile"
+
+@MINICOM@ $options $port

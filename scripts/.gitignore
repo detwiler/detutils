@@ -9,5 +9,6 @@ get-autotools
 get-git
 get-gnu-tool
 makecscope
+mini
 script-functions
 upper2lower

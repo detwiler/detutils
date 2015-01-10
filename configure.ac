@@ -144,6 +144,18 @@ AC_SUBST([GIT_BASE_URL], [$with_git_base_url])
 DET_ARG_WITH([gnu_base_url], [http://ftp.gnu.org/gnu])
 AC_SUBST([GNU_BASE_URL], [$with_gnu_base_url])
 
+# Option to enable minicom
+DET_ARG_ENABLE([minicom], [no])
+AM_CONDITIONAL([ENABLE_MINICOM],
+               [test "x$enable_minicom" = xyes])
+
+# Check for minicom if minicom is enabled
+AM_COND_IF([ENABLE_MINICOM],
+           [AC_ARG_VAR([MINICOM], [minicom])
+            AC_CHECK_PROGS([MINICOM], [minicom], [no])
+            AS_IF([test "x$MINICOM" = xno],
+                  [AC_MSG_ERROR([could not find minicom])])])
+
 AC_CONFIG_FILES([Makefile
                  scripts/Makefile
                  scripts/config-bash

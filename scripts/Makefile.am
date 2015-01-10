@@ -7,8 +7,7 @@ static_data =
 
 dist_pkgdata_DATA = $(static_data)
 
-static_scripts = mini \
-		 nixify \
+static_scripts = nixify \
 		 pattmv \
 		 space2hyphen \
 		 weather
@@ -46,6 +45,11 @@ make_scripts = dl-git \
 	       get-git \
 	       get-gnu-tool
 
+if ENABLE_MINICOM
+make_scripts += mini
+endif
+EXTRA_DIST += mini.in
+
 pkgdata_SCRIPTS += $(make_scripts)
 
 CLEANFILES = $(make_data) \
@@ -64,6 +68,7 @@ EDIT = -e 's:@ASCII85[@]:$(ASCII85):g' \
        -e 's;@GIT_BASE_URL[@];$(GIT_BASE_URL);g' \
        -e 's;@GNU_BASE_URL[@];$(GNU_BASE_URL);g' \
        -e 's:@GPG[@]:$(GPG):g' \
+       -e 's:@MINICOM[@]:$(MINICOM):g' \
        -e 's:@MKTEMP[@]:$(MKTEMP):g' \
        -e 's:@pkgdatadir[@]:$(pkgdatadir):g' \
        -e 's:@SHA1SUM[@]:$(SHA1SUM):g' \
