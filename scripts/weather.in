@@ -1,46 +1,57 @@
-#! /bin/env bash
+#! @ENV@ bash
+# vim: ft=sh
+
+set -o pipefail
 
 # functions
 
+source @pkgdatadir@/script-functions
+
 function usage()
 {
-	cat <<- eof
+	cat <<- EOF
 
-	Usage: $(basename $0) [OPTIONS] CITY
+	Usage: $me [OPTIONS] CITY
 
 	  -f show forecast
 	  -w show current weather
+	  -V print version
+	  -h print usage
 
 	Examples:
 
-	$(basename $0) -f bmore
-	$(basename $0) -w dc
-	$(basename $0) -fw baltimore
+	$me -f bmore
+	$me -w dc
+	$me -fw baltimore
 
-	eof
+	EOF
 } # usage()
 
-while getopts ":fw" opt; do
+me="$(basename $0)"
+
+while getopts 'fwVh' opt; do
   case ${opt} in
-    f ) forecast_show="true" ;;
-    w ) weather_show="true" ;;
-    \? ) usage; exit 1 ;;
+    f ) forecast_show='true' ;;
+    w ) weather_show='true' ;;
+    V ) print_version $me; exit 0 ;;
+    h ) usage; exit 0 ;;
+    \? ) usage >/dev/stderr; exit 1 ;;
   esac
 done
 
 shift $((${OPTIND} - 1))
 
-noaa="http://weather.noaa.gov/pub/data"
-weather_dir="observations/metar/decoded"
-forecast_dir="forecasts/zone"
+noaa='http://weather.noaa.gov/pub/data'
+weather_dir='observations/metar/decoded'
+forecast_dir='forecasts/zone'
 noaa_weather="$noaa/$weather_dir"
 noaa_forecast="$noaa/$forecast_dir"
 
-weather_bmore="KDMH.TXT"
-weather_bwi="KBWI.TXT"
-weather_dc="KDCA.TXT"
-weather_toledo="KTOL.TXT"
-weather_cleveland="KCLE.TXT"
+weather_bmore='KDMH.TXT'
+weather_bwi='KBWI.TXT'
+weather_dc='KDCA.TXT'
+weather_toledo='KTOL.TXT'
+weather_cleveland='KCLE.TXT'
 
 declare -A weather
 
@@ -52,10 +63,10 @@ weather[dca]=$weather_dc
 weather[toledo]=$weather_toledo
 weather[cleveland]=$weather_cleveland
 
-forecast_bmore="md/mdz011.txt"
-forecast_dc="dc/dcz001.txt"
-forecast_toledo="oh/ohz003.txt"
-forecast_cleveland="oh/ohz010.txt"
+forecast_bmore='md/mdz011.txt'
+forecast_dc='dc/dcz001.txt'
+forecast_toledo='oh/ohz003.txt'
+forecast_cleveland='oh/ohz010.txt'
 
 declare -A forecast
 
@@ -66,41 +77,31 @@ forecast[toledo]=$forecast_toledo
 forecast[cleveland]=$forecast_cleveland
 
 if [[ -z $@ ]]; then
-  echo "Please enter a city name"
-  usage
-  exit 1
+  die 'Please enter a city name'
 fi
 
 if [[ -z $forecast_show && -z $weather_show ]]; then
-  echo "Please specify a forecast and/or weather option"
-  usage
-  exit 1
+  die 'Please specify a forecast and/or weather option'
 fi
 
 for city in "$@"; do
-
   if [[ -n $weather_show ]]; then
     echo
     if [[ -z ${weather[$city]} ]]; then
-      echo "Unrecognized city name: $city"
-      usage
-      exit 1
+      die "Unrecognized city name: $city"
     else
       url="$noaa_weather/${weather[$city]}"
-      curl --silent $url
+      @CURL@ --silent $url
     fi
   fi
 
   if [[ -n $forecast_show ]]; then
     echo
     if [[ -z ${forecast[$city]} ]]; then
-      echo "Unrecognized city name: $city"
-      usage
-      exit 1
+      die "Unrecognized city name: $city"
     else
       url="$noaa_forecast/${forecast[$city]}"
-      curl --silent $url | sed 's/\.\.\./\n/g; s/^\./\n/'
+      @CURL@ --silent $url | sed 's/\.\.\./\n/g; s/^\./\n/'
     fi
   fi
-
 done

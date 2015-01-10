@@ -36,6 +36,11 @@ AC_CHECK_PROGS([CSCOPEPRG], [cscope], [no])
 AS_IF([test "x$CSCOPEPRG" = xno],
       [AC_MSG_ERROR([could not find cscope])])
 
+AC_ARG_VAR([CURL], [path to curl])
+AC_PATH_PROG([CURL], [curl], [no])
+AS_IF([test "x$CURL" = xno],
+      [AC_MSG_ERROR([cannot find curl])])
+
 AC_CACHE_CHECK([for cut that supports --delimiter], [ac_cv_path_CUT],
   [AC_PATH_PROGS_FEATURE_CHECK([CUT], [cut gcut],
     [$ac_path_CUT --delimiter=' ' --fields=1 </dev/null &>/dev/null \

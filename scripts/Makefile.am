@@ -7,7 +7,7 @@ static_data =
 
 dist_pkgdata_DATA = $(static_data)
 
-static_scripts = weather
+static_scripts =
 
 dist_pkgdata_SCRIPTS = $(static_scripts)
 
@@ -42,7 +42,8 @@ make_scripts = dl-git \
 	       nixify \
 	       pattmv \
 	       space2hyphen \
-	       upper2lower
+	       upper2lower \
+	       weather
 
 if ENABLE_MINICOM
 make_scripts += mini
@@ -62,6 +63,7 @@ EXTRA_DIST += $(make_sources)
 EDIT = -e 's:@ASCII85[@]:$(ASCII85):g' \
        -e 's:@BASE64[@]:$(BASE64):g' \
        -e 's:@ENV[@]:$(ENV):g' \
+       -e 's:@CURL[@]:$(CURL):g' \
        -e 's:@CUT[@]:$(CUT):g' \
        -e 's:@DOS2UNIX[@]:$(DOS2UNIX):g' \
        -e 's:@FILE[@]:$(FILE):g' \
