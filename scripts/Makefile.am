@@ -7,8 +7,7 @@ static_data =
 
 dist_pkgdata_DATA = $(static_data)
 
-static_scripts = space2hyphen \
-		 weather
+static_scripts = weather
 
 dist_pkgdata_SCRIPTS = $(static_scripts)
 
@@ -43,7 +42,8 @@ make_scripts = dl-git \
 	       get-git \
 	       get-gnu-tool \
 	       nixify \
-	       pattmv
+	       pattmv \
+	       space2hyphen
 
 if ENABLE_MINICOM
 make_scripts += mini
