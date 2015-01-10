@@ -16,6 +16,7 @@ AM_SILENT_RULES([yes])
 AC_CANONICAL_HOST
 
 # Checks for programs.
+AC_PROG_GREP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_SED
@@ -42,10 +43,20 @@ AC_CACHE_CHECK([for cut that supports --delimiter], [ac_cv_path_CUT],
     [AC_MSG_ERROR([could not find cut that supports --delimiter])])])
 AC_SUBST([CUT], [$ac_cv_path_CUT])
 
+AC_ARG_VAR([DOS2UNIX], [path to dos2unix])
+AC_CHECK_PROGS([DOS2UNIX], [dos2unix], [no])
+AS_IF([test "x$DOS2UNIX" = xno],
+      [AC_MSG_ERROR([could not find dos2unix])])
+
 AC_ARG_VAR([ENV], [path to env])
 AC_PATH_PROG([ENV], [env], [no])
 AS_IF([test "x$ENV" = xno],
       [AC_MSG_ERROR([cannot find env])])
+
+AC_ARG_VAR([FILE], [path to file])
+AC_PATH_PROG([FILE], [file], [no])
+AS_IF([test "x$FILE" = xno],
+      [AC_MSG_ERROR([cannot find file program])])
 
 AC_ARG_VAR([GPG], [GNU gpg])
 AC_CHECK_PROGS([GPG], [gpg2 gpg], [no])
@@ -116,6 +127,13 @@ AC_ARG_VAR([UUENCODE], [path to uuencode])
 AC_CHECK_PROGS([UUENCODE], [uuencode], [no])
 AS_IF([test "x$UUENCODE" = xno],
       [AC_MSG_ERROR([could not find uuencode; install GNU sharutils])])
+
+AC_CACHE_CHECK([for wc that supports --lines], [ac_cv_path_WC],
+  [AC_PATH_PROGS_FEATURE_CHECK([WC], [wc gwc],
+    [$ac_path_WC --lines </dev/null &>/dev/null \
+      && ac_cv_path_WC=$ac_path_WC ac_path_WC_found=:],
+    [AC_MSG_ERROR([could not find wc that supports --lines])])])
+AC_SUBST([WC], [$ac_cv_path_WC])
 
 AC_ARG_VAR([WGET], [wget])
 AC_CHECK_PROGS([WGET], [wget], [no])

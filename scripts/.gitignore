@@ -10,6 +10,7 @@ get-git
 get-gnu-tool
 makecscope
 mini
+nixify
 pattmv
 script-functions
 upper2lower

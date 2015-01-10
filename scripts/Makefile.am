@@ -7,8 +7,7 @@ static_data =
 
 dist_pkgdata_DATA = $(static_data)
 
-static_scripts = nixify \
-		 space2hyphen \
+static_scripts = space2hyphen \
 		 weather
 
 dist_pkgdata_SCRIPTS = $(static_scripts)
@@ -43,6 +42,7 @@ make_scripts = dl-git \
 	       get-autotools \
 	       get-git \
 	       get-gnu-tool \
+	       nixify \
 	       pattmv
 
 if ENABLE_MINICOM
@@ -64,13 +64,17 @@ EDIT = -e 's:@ASCII85[@]:$(ASCII85):g' \
        -e 's:@BASE64[@]:$(BASE64):g' \
        -e 's:@ENV[@]:$(ENV):g' \
        -e 's:@CUT[@]:$(CUT):g' \
-       -e 's:@HEAD[@]:$(HEAD):g' \
+       -e 's:@DOS2UNIX[@]:$(DOS2UNIX):g' \
+       -e 's:@FILE[@]:$(FILE):g' \
        -e 's;@GIT_BASE_URL[@];$(GIT_BASE_URL);g' \
        -e 's;@GNU_BASE_URL[@];$(GNU_BASE_URL);g' \
        -e 's:@GPG[@]:$(GPG):g' \
+       -e 's:@GREP[@]:$(GREP):g' \
+       -e 's:@HEAD[@]:$(HEAD):g' \
        -e 's:@MINICOM[@]:$(MINICOM):g' \
        -e 's:@MKTEMP[@]:$(MKTEMP):g' \
        -e 's:@pkgdatadir[@]:$(pkgdatadir):g' \
+       -e 's:@SED[@]:$(SED):g' \
        -e 's:@SHA1SUM[@]:$(SHA1SUM):g' \
        -e 's:@SHA224SUM[@]:$(SHA224SUM):g' \
        -e 's:@SHA256SUM[@]:$(SHA256SUM):g' \
@@ -80,6 +84,7 @@ EDIT = -e 's:@ASCII85[@]:$(ASCII85):g' \
        -e 's:@TAIL[@]:$(TAIL):g' \
        -e 's:@TR[@]:$(TR):g' \
        -e 's:@UUENCODE[@]:$(UUENCODE):g' \
+       -e 's:@WC[@]:$(WC):g' \
        -e 's:@WGET[@]:$(WGET):g' \
        -e 's:@XXD[@]:$(XXD):g' \
        -e 's:@ZCAT[@]:$(ZCAT):g'
