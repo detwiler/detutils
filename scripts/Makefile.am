@@ -17,16 +17,14 @@ conf_data = config-bash \
 
 pkgdata_DATA = $(conf_data)
 
-conf_scripts = makecscope \
-	       upper2lower
+conf_scripts = makecscope
 
 pkgdata_SCRIPTS = $(conf_scripts)
 
 DISTCLEANFILES = $(conf_data) \
 		 $(conf_scripts)
 
-extra_conf_sources = upper2lower.cygwin \
-		     upper2lower.linux
+extra_conf_sources =
 
 EXTRA_DIST = $(extra_conf_sources)
 
@@ -43,7 +41,8 @@ make_scripts = dl-git \
 	       get-gnu-tool \
 	       nixify \
 	       pattmv \
-	       space2hyphen
+	       space2hyphen \
+	       upper2lower
 
 if ENABLE_MINICOM
 make_scripts += mini

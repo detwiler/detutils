@@ -179,7 +179,6 @@ AC_CONFIG_FILES([Makefile
                  scripts/config-bash
                  scripts/makecscope
                  scripts/script-functions
-                 scripts/upper2lower
                  ])
 
 AC_OUTPUT
