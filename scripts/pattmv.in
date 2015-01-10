@@ -1,0 +1,50 @@
+#! @ENV@ bash
+# vim: ft=sh
+
+# functions
+
+source @pkgdatadir@/script-functions
+
+function usage()
+{
+	cat <<- EOF
+
+	Usage: $me [-c] -p <pattern> -r <replacement> <filename>...
+
+	  -c copy files instead of moving them
+	  -p pattern to match
+	  -r replacement string
+	  -V print version
+	  -h print usage
+
+	Examples:
+
+	   $me -p foo -r bar foobaz barfoobaz
+
+	EOF
+} # usage()
+
+me="$(basename $0)"
+action='mv'
+
+while getopts "cp:r:Vh" opt; do
+  case $opt in
+    c ) action='cp' ;;
+    p ) pattern="$OPTARG" ;;
+    r ) replacement="$OPTARG" ;;
+    V ) print_version $me; exit 0 ;;
+    h ) usage; exit 0 ;;
+    \? ) usage >/dev/stderr; exit 1 ;;
+  esac
+done
+
+shift $(($OPTIND - 1))
+
+if [[ -z $pattern || -z $replacement ]]; then
+  die 'The following options are mandatory: -p -r'
+fi
+
+for filename in "$@"; do
+  newfilename=${filename/$pattern/$replacement}
+  $action $filename $newfilename
+done
