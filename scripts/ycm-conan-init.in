@@ -1,0 +1,102 @@
+#! /usr/bin/env bash
+
+# fail if any command in a pipeline fails
+set -o pipefail
+
+# functions
+source @pkgdatadir@/script-functions
+
+function usage()
+{
+	cat <<- EOF
+
+	Usage: $me [OPTIONS] [COMPILATION-DB-DIR]
+
+	Use Conan to initialize a compilation database for YouCompleteMe's
+	clangd-completer. This assumes that your project has a conanfile.py
+	with a build method, and that the build method uses a build helper
+	whose configure method causes the underlying build system to generate
+	the compilation database.
+
+	This program runs the following commands.
+
+	$ conan install --install-folder [COMPILATION-DB-DIR] .
+	$ conan build --configure --build-folder [COMPILATION-DB-DIR] .
+
+	Finally, the program writes a YouCompleteMe configuration file,
+	$YCM_CONF, to the current directory, which configures the
+	clangd-completer with the generated compilation database.
+
+	Options:
+
+	  -b, --build [ARG]	option will be passed to conan install
+	  			command's --build option.
+	  			see conan install --help. (default: none)
+	  -h, --help		display this help and exit
+	  -v, --version		print version information
+
+	Arguments:
+
+	  [COMPILATION-DB-DIR]	compilation database directory. if none given,
+	  			default to $COMP_DB_DIR_DEFAULT.
+
+	EOF
+} # usage
+
+me=$(basename $0)
+COMP_DB_DIR_DEFAULT='.ycm-conan-build'
+YCM_CONF='.ycm_extra_conf.py'
+
+short_opts='b:hv'
+long_opts='build:,help,version'
+
+if ! options=$(getopt --options $short_opts --longoptions $long_opts --name $me -- "$@"); then
+  die "Option parsing failed"
+fi
+eval set -- "$options"
+
+conan_build_opts=()
+
+while true; do
+  case "$1" in
+    -h|--help) usage; exit 0 ;;
+    -b|--build) conan_build_opts+=("--build $2"); shift 2 ;;
+    -v|--version) print_version $me; exit 0 ;;
+    --) shift; break ;;
+    *) die 'Option parsing failed' ;;
+  esac
+done
+
+comp_db_dir=${1:-${COMP_DB_DIR_DEFAULT}}
+
+# run conan install
+if ! @CONAN@ install ${conan_build_opts[@]} --install-folder $comp_db_dir .; then
+  die 'conan install command failed'
+fi
+
+# run conan build
+if ! @CONAN@ build --configure --build-folder $comp_db_dir .; then
+  die 'conan build command failed'
+fi
+
+# write ycm config file
+if ! cat <<- EOF >$YCM_CONF
+	from pathlib import Path
+
+	COMPILATION_DATABASE_DIRNAME = "$comp_db_dir"
+	COMPILATION_DATABASE_FILENAME = "compile_commands.json"
+
+	def Settings(**kwargs):
+	    language = kwargs["language"]
+	    if language == "cfamily":
+	        curdir = Path(__file__).resolve().parent
+	        compilation_db_path = curdir.joinpath(
+	            COMPILATION_DATABASE_DIRNAME, COMPILATION_DATABASE_FILENAME
+	        )
+	        if compilation_db_path.exists():
+	            return {"ls": {"compilationDatabasePath": compilation_db_path.parent.name}}
+	    return None
+	EOF
+then
+  die "Failed to write $YCM_CONF"
+fi

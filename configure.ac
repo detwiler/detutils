@@ -31,6 +31,11 @@ AC_CHECK_PROGS([BASE64], [base64 gbase64], [no])
 AS_IF([test "x$BASE64" = xno],
       [AC_MSG_ERROR([could not find GNU coreutils base64])])
 
+AC_ARG_VAR([CONAN], [path to conan])
+AC_CHECK_PROGS([CONAN], [conan], [no])
+AS_IF([test "x$CONAN" = xno],
+      [AC_MSG_ERROR([could not find conan; pip install conan])])
+
 AC_ARG_VAR([CSCOPEPRG], [path to cscope])
 AC_CHECK_PROGS([CSCOPEPRG], [cscope], [no])
 AS_IF([test "x$CSCOPEPRG" = xno],
