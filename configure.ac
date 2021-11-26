@@ -21,10 +21,10 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_SED
 
-AC_ARG_VAR([ASCII85], [path to ascii85])
-AC_CHECK_PROGS([ASCII85], [ascii85], [no])
-AS_IF([test "x$ASCII85" = xno],
-      [AC_MSG_ERROR([could not find ascii85; install rubygem-Ascii85])])
+AC_ARG_VAR([BASENC], [path to basenc])
+AC_CHECK_PROGS([BASENC], [basenc gbasenc], [no])
+AS_IF([test "x$BASENC" = xno],
+      [AC_MSG_ERROR([could not find GNU coreutils basenc])])
 
 AC_ARG_VAR([BASE64], [GNU coreutils base64])
 AC_CHECK_PROGS([BASE64], [base64 gbase64], [no])

@@ -61,8 +61,8 @@ make_sources = $(addsuffix .in,$(make_scripts) $(make_data))
 EXTRA_DIST += $(make_sources)
 
 # sed command to build data/scripts
-EDIT = -e 's:@ASCII85[@]:$(ASCII85):g' \
-       -e 's:@BASE64[@]:$(BASE64):g' \
+EDIT = -e 's:@BASE64[@]:$(BASE64):g' \
+       -e 's:@BASENC[@]:$(BASENC):g' \
        -e 's:@ENV[@]:$(ENV):g' \
        -e 's:@CONAN[@]:$(CONAN):g' \
        -e 's:@CURL[@]:$(CURL):g' \
