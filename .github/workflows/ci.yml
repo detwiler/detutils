@@ -85,8 +85,9 @@ jobs:
         run: make install
 
       - name: Configure Project Name and Version
-        run: echo "PROJECT_NAME=`cat .package-name`" >>$GITHUB_ENV
-        run: echo "PROJECT_VERSION=`cat .version`" >>$GITHUB_ENV
+        run: |
+          echo "PROJECT_NAME=`cat .package-name`" >>$GITHUB_ENV
+          echo "PROJECT_VERSION=`cat .version`" >>$GITHUB_ENV
 
       - name: Upload Distribution Artifacts
         uses: actions/upload-artifact@v2
@@ -111,8 +112,9 @@ jobs:
           name: distribution-artifacts
 
       - name: Configure Project Name and Version
-        run: echo "PROJECT_NAME=`cat .package-name`" >>$GITHUB_ENV
-        run: echo "PROJECT_VERSION=`cat .version`" >>$GITHUB_ENV
+        run: |
+          echo "PROJECT_NAME=`cat .package-name`" >>$GITHUB_ENV
+          echo "PROJECT_VERSION=`cat .version`" >>$GITHUB_ENV
 
       - name: Create Release
         id: create-release
