@@ -6,6 +6,7 @@ SUDO=`which sudo`
 pkgs_common='
 coreutils
 curl
+dos2unix
 file
 gzip
 minicom
