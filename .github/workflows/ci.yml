@@ -31,9 +31,9 @@ jobs:
         run: |
           . /etc/os-release
           case $ID in
-              alpine) apk add git tar;;
-              fedora) dnf -y install git-core which;;
-              ubuntu) apt-get -y update && apt-get -y install git;;
+              alpine) apk update && apk upgrade && apk add git tar;;
+              fedora) dnf -y updgrade && dnf -y install git-core which;;
+              ubuntu) apt-get -y update && apt-get -y upgrade && apt-get -y install git;;
           esac
 
       - name: Checkout
