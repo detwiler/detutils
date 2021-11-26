@@ -70,7 +70,7 @@ jobs:
           fi
 
       - name: Bootstrap
-        run: ./bootstrap --install-prereqs --install-reqs
+        run: ./bootstrap --install-buildreqs --install-reqs
 
       - name: Configure
         run: ./configure --prefix=$RUNNER_TEMP/.local
@@ -84,7 +84,8 @@ jobs:
       - name: Install
         run: make install
 
-      - name: Configure Version
+      - name: Configure Project Name and Version
+        run: echo "PROJECT_NAME=`cat .package-name`" >>$GITHUB_ENV
         run: echo "PROJECT_VERSION=`cat .version`" >>$GITHUB_ENV
 
       - name: Upload Distribution Artifacts
@@ -93,7 +94,8 @@ jobs:
           name: distribution-artifacts
           if-no-files-found: error
           path: |
-            dev-vms-${{ env.PROJECT_VERSION }}.tar.gz
+            ${{ env.PROJECT_NAME }}-${{ env.PROJECT_VERSION }}.tar.gz
+            .package-name
             .version
 
   create-release:
@@ -108,7 +110,8 @@ jobs:
         with:
           name: distribution-artifacts
 
-      - name: Configure Version
+      - name: Configure Project Name and Version
+        run: echo "PROJECT_NAME=`cat .package-name`" >>$GITHUB_ENV
         run: echo "PROJECT_VERSION=`cat .version`" >>$GITHUB_ENV
 
       - name: Create Release
@@ -127,6 +130,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create-release.outputs.upload_url }}
-          asset_path: dev-vms-${{ env.PROJECT_VERSION }}.tar.gz
-          asset_name: dev-vms-${{ env.PROJECT_VERSION }}.tar.gz
+          asset_path: ${{ env.PROJECT_NAME }}-${{ env.PROJECT_VERSION }}.tar.gz
+          asset_name: ${{ env.PROJECT_NAME }}-${{ env.PROJECT_VERSION }}.tar.gz
           asset_content_type: application/gzip
