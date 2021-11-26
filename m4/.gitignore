@@ -1,0 +1,9 @@
+/00gnulib.m4
+/gnulib-common.m4
+/gnulib-comp.m4
+/gnulib-tool.m4
+/zzgnulib.m4
+
+# Ignore gnulib-cache.m4 since we declare our modules in bootstrap.conf
+# https://www.gnu.org/software/gnulib/manual/gnulib.html#VCS-Issues
+/gnulib-cache.m4

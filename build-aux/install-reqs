@@ -1,0 +1,57 @@
+#! /bin/sh
+
+OS_RELEASE_FILE=${OS_RELEASE_FILE:-/etc/os-release}
+SUDO=`which sudo`
+
+pkgs_common='
+coreutils
+curl
+file
+gzip
+minicom
+sharutils
+wget
+'
+
+pkgs_pip='
+conan
+'
+
+pkgs_alpine='
+gnupg
+py3-pip
+xxd
+'
+
+pkgs_alpine_edge='
+cscope
+'
+
+pkgs_fedora='
+cscope
+gnupg2
+python3-pip
+vim-common
+'
+
+pkgs_ubuntu='
+cscope
+gpg
+python3-pip
+xxd
+'
+
+test -r $OS_RELEASE_FILE || exit
+
+. $OS_RELEASE_FILE
+
+case $ID in
+    alpine)
+        $SUDO apk add $pkgs_common $pkgs_alpine
+        $SUDO apk add $pkgs_alpine_edge --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing
+        ;;
+    fedora) $SUDO dnf --assumeyes install $pkgs_common $pkgs_fedora;;
+    ubuntu) $SUDO apt-get --assume-yes install $pkgs_common $pkgs_ubuntu;;
+esac
+
+$SUDO python3 -m pip install --upgrade $pkgs_pip

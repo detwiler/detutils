@@ -5,12 +5,12 @@ AC_INIT([detutils],
         [m4_esyscmd([build-aux/git-version-gen .tarball-version])],
         [mike@detwiler.io])
 
-AC_PREREQ([2.63])
+AC_PREREQ([2.64])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([src/get-git.in])
 
-AM_INIT_AUTOMAKE([-Wall -Werror foreign])
+AM_INIT_AUTOMAKE([-Wall -Werror -Wno-portability foreign])
 AM_SILENT_RULES([yes])
 
 AC_CANONICAL_HOST
@@ -185,10 +185,10 @@ AM_COND_IF([ENABLE_MINICOM],
                   [AC_MSG_ERROR([could not find minicom])])])
 
 AC_CONFIG_FILES([Makefile
-                 scripts/Makefile
-                 scripts/config-bash
-                 scripts/makecscope
-                 scripts/script-functions
+                 src/Makefile
+                 src/config-bash
+                 src/makecscope
+                 src/script-functions
                  ])
 
 AC_OUTPUT
