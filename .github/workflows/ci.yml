@@ -1,0 +1,132 @@
+name: ci
+on: [push]
+jobs:
+
+  build-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    container: ${{ matrix.image }}
+
+    strategy:
+      matrix:
+        include:
+          - image: alpine:latest
+            vm-box-name: alpine
+          - image: fedora:latest
+            vm-box-name: fedora
+          - image: ubuntu:rolling
+            vm-box-name: ubuntu
+          - image: ubuntu:latest
+            vm-box-name: ubuntu
+
+    env:
+      DEBIAN_FRONTEND: noninteractive
+      GNULIB_SRCDIR: "$HOME/.gnulib"
+      GNULIB_URL: 'https://github.com/coreutils/gnulib.git'
+      USER: ${{ github.repository_owner }}
+      VM_BOX_NAME: ${{ matrix.vm-box-name }}
+
+    steps:
+      - name: Install Pre-Checkout Tools
+        run: |
+          . /etc/os-release
+          case $ID in
+              alpine) apk add git tar;;
+              fedora) dnf -y install git-core which;;
+              ubuntu) apt-get -y update && apt-get -y install git;;
+          esac
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      # see: https://github.com/actions/checkout/issues/290
+      - name: Fetch Tags
+        run: git fetch --force --tags
+
+      - name: Configure Gnulib Cache Key
+        run: echo "GNULIB_CACHE_KEY=`git submodule status .gnulib | sed -re 's/^.([0-9,a-f]{1,}) .*$/\1/'`" >>$GITHUB_ENV
+
+      - name: Cache Gnulib Repository
+        id: cache-gnulib
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-gnulib
+        with:
+          path: ${{ env.GNULIB_SRCDIR }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ env.GNULIB_CACHE_KEY }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-
+
+      - name: Fetch Upstream Gnulib Repository
+        if: steps.cache-gnulib.outputs.cache-hit != 'true'
+        run: |
+          if [ -d $GNULIB_SRCDIR ]; then
+              cd $GNULIB_SRCDIR
+              git pull --ff-only
+          else
+              git clone $GNULIB_URL $GNULIB_SRCDIR
+          fi
+
+      - name: Bootstrap
+        run: ./bootstrap --install-prereqs --install-reqs
+
+      - name: Configure
+        run: ./configure --prefix=$RUNNER_TEMP/.local
+
+      - name: Build
+        run: make
+
+      - name: Distribution Test
+        run: make distcheck
+
+      - name: Install
+        run: make install
+
+      - name: Configure Version
+        run: echo "PROJECT_VERSION=`cat .version`" >>$GITHUB_ENV
+
+      - name: Upload Distribution Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: distribution-artifacts
+          if-no-files-found: error
+          path: |
+            dev-vms-${{ env.PROJECT_VERSION }}.tar.gz
+            .version
+
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: build-test
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - name: Download Distribution Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: distribution-artifacts
+
+      - name: Configure Version
+        run: echo "PROJECT_VERSION=`cat .version`" >>$GITHUB_ENV
+
+      - name: Create Release
+        id: create-release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.PROJECT_VERSION }}
+          release_name: Release ${{ env.PROJECT_VERSION }}
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          asset_path: dev-vms-${{ env.PROJECT_VERSION }}.tar.gz
+          asset_name: dev-vms-${{ env.PROJECT_VERSION }}.tar.gz
+          asset_content_type: application/gzip
