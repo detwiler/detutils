@@ -1,6 +1,6 @@
 # Makefile.am
 
-SUBDIRS = scripts
+SUBDIRS = src
 
 pkgdata_DATA = $(PACKAGE)-release
 

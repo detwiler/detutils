@@ -8,7 +8,7 @@ AC_INIT([detutils],
 AC_PREREQ([2.63])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_SRCDIR([scripts/get-git.in])
+AC_CONFIG_SRCDIR([src/get-git.in])
 
 AM_INIT_AUTOMAKE([-Wall -Wno-portability -Werror dist-bzip2])
 AM_SILENT_RULES([yes])
