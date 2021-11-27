@@ -23,8 +23,8 @@ AC_PROG_SED
 
 AC_ARG_VAR([BASENC], [path to basenc])
 AC_CHECK_PROGS([BASENC], [basenc gbasenc], [no])
-AS_IF([test "x$BASENC" = xno],
-      [AC_MSG_ERROR([could not find GNU coreutils basenc])])
+AM_CONDITIONAL([HAVE_BASENC],
+               [test "x$BASENC" != xno])
 
 AC_ARG_VAR([BASE64], [GNU coreutils base64])
 AC_CHECK_PROGS([BASE64], [base64 gbase64], [no])
