@@ -2,6 +2,6 @@
 
 # detutils
 
-Utility programs
+Miscellaneous utility programs
 
 [comment]: # ( vim: set autoindent syntax=markdown textwidth=78: )

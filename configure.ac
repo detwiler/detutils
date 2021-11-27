@@ -26,25 +26,10 @@ AC_CHECK_PROGS([BASENC], [basenc gbasenc], [no])
 AM_CONDITIONAL([HAVE_BASENC],
                [test "x$BASENC" != xno])
 
-AC_ARG_VAR([BASE64], [GNU coreutils base64])
-AC_CHECK_PROGS([BASE64], [base64 gbase64], [no])
-AS_IF([test "x$BASE64" = xno],
-      [AC_MSG_ERROR([could not find GNU coreutils base64])])
-
-AC_ARG_VAR([CONAN], [path to conan])
-AC_CHECK_PROGS([CONAN], [conan], [no])
-AS_IF([test "x$CONAN" = xno],
-      [AC_MSG_ERROR([could not find conan; pip install conan])])
-
-AC_ARG_VAR([CSCOPEPRG], [path to cscope])
-AC_CHECK_PROGS([CSCOPEPRG], [cscope], [no])
-AS_IF([test "x$CSCOPEPRG" = xno],
-      [AC_MSG_ERROR([could not find cscope])])
-
-AC_ARG_VAR([CURL], [path to curl])
-AC_PATH_PROG([CURL], [curl], [no])
-AS_IF([test "x$CURL" = xno],
-      [AC_MSG_ERROR([cannot find curl])])
+QH_REQUIRE_PROG([BASE64], [base64 gbase64], [path to base64])
+QH_REQUIRE_PROG([CONAN], [conan], [path to conan])
+QH_REQUIRE_PROG([CSCOPE_PATH], [cscope], [path to cscope])
+QH_REQUIRE_PROG([CURL], [curl], [path to curl])
 
 AC_CACHE_CHECK([for cut that supports --delimiter], [ac_cv_path_CUT],
   [AC_PATH_PROGS_FEATURE_CHECK([CUT], [cut gcut],
@@ -53,25 +38,10 @@ AC_CACHE_CHECK([for cut that supports --delimiter], [ac_cv_path_CUT],
     [AC_MSG_ERROR([could not find cut that supports --delimiter])])])
 AC_SUBST([CUT], [$ac_cv_path_CUT])
 
-AC_ARG_VAR([DOS2UNIX], [path to dos2unix])
-AC_CHECK_PROGS([DOS2UNIX], [dos2unix], [no])
-AS_IF([test "x$DOS2UNIX" = xno],
-      [AC_MSG_ERROR([could not find dos2unix])])
-
-AC_ARG_VAR([ENV], [path to env])
-AC_PATH_PROG([ENV], [env], [no])
-AS_IF([test "x$ENV" = xno],
-      [AC_MSG_ERROR([cannot find env])])
-
-AC_ARG_VAR([FILE], [path to file])
-AC_PATH_PROG([FILE], [file], [no])
-AS_IF([test "x$FILE" = xno],
-      [AC_MSG_ERROR([cannot find file program])])
-
-AC_ARG_VAR([GPG], [GNU gpg])
-AC_CHECK_PROGS([GPG], [gpg2 gpg], [no])
-AS_IF([test "x$GPG" = xno],
-      [AC_MSG_ERROR([could not find GNU gpg])])
+QH_REQUIRE_PROG([DOS2UNIX], [dos2unix], [path to dos2unix])
+QH_REQUIRE_PROG([ENV], [env], [path to env])
+QH_REQUIRE_PROG([FILE], [file], [path to file])
+QH_REQUIRE_PROG([GPG], [gpg2 gpg], [path to gpg])
 
 AC_CACHE_CHECK([for head that supports --bytes], [ac_cv_path_HEAD],
   [AC_PATH_PROGS_FEATURE_CHECK([HEAD], [head ghead],
@@ -87,30 +57,11 @@ AC_CACHE_CHECK([for mktemp that supports --directory], [ac_cv_path_MKTEMP],
     [AC_MSG_ERROR([could not find mktemp that supports --directory])])])
 AC_SUBST([MKTEMP], [$ac_cv_path_MKTEMP])
 
-AC_ARG_VAR([SHA1SUM], [GNU coreutils sha1sum])
-AC_CHECK_PROGS([SHA1SUM], [sha1sum gsha1sum], [no])
-AS_IF([test "x$SHA1SUM" = xno],
-      [AC_MSG_ERROR([could not find GNU coreutils sha1sum])])
-
-AC_ARG_VAR([SHA224SUM], [GNU coreutils sha224sum])
-AC_CHECK_PROGS([SHA224SUM], [sha224sum gsha224sum], [no])
-AS_IF([test "x$SHA224SUM" = xno],
-      [AC_MSG_ERROR([could not find GNU coreutils sha224sum])])
-
-AC_ARG_VAR([SHA256SUM], [GNU coreutils sha256sum])
-AC_CHECK_PROGS([SHA256SUM], [sha256sum gsha256sum], [no])
-AS_IF([test "x$SHA256SUM" = xno],
-      [AC_MSG_ERROR([could not find GNU coreutils sha256sum])])
-
-AC_ARG_VAR([SHA384SUM], [GNU coreutils sha384sum])
-AC_CHECK_PROGS([SHA384SUM], [sha384sum gsha384sum], [no])
-AS_IF([test "x$SHA384SUM" = xno],
-      [AC_MSG_ERROR([could not find GNU coreutils sha384sum])])
-
-AC_ARG_VAR([SHA512SUM], [GNU coreutils sha512sum])
-AC_CHECK_PROGS([SHA512SUM], [sha512sum gsha512sum], [no])
-AS_IF([test "x$SHA512SUM" = xno],
-      [AC_MSG_ERROR([could not find GNU coreutils sha512sum])])
+QH_REQUIRE_PROG([SHA1SUM], [sha1sum gsha1sum], [path to sha1sum])
+QH_REQUIRE_PROG([SHA224SUM], [sha224sum gsha224sum], [path to sha224sum])
+QH_REQUIRE_PROG([SHA256SUM], [sha256sum gsha256sum], [path to sha256sum])
+QH_REQUIRE_PROG([SHA384SUM], [sha384sum gsha384sum], [path to sha384sum])
+QH_REQUIRE_PROG([SHA512SUM], [sha512sum gsha512sum], [path to sha512sum])
 
 AC_CACHE_CHECK([for stat that supports --printf], [ac_cv_path_STAT],
   [AC_PATH_PROGS_FEATURE_CHECK([STAT], [stat gstat],
@@ -133,10 +84,7 @@ AC_CACHE_CHECK([for tr that supports --delete], [ac_cv_path_TR],
     [AC_MSG_ERROR([could not find tr that supports --delete])])])
 AC_SUBST([TR], [$ac_cv_path_TR])
 
-AC_ARG_VAR([UUENCODE], [path to uuencode])
-AC_CHECK_PROGS([UUENCODE], [uuencode], [no])
-AS_IF([test "x$UUENCODE" = xno],
-      [AC_MSG_ERROR([could not find uuencode; install GNU sharutils])])
+QH_REQUIRE_PROG([UUENCODE], [uuencode], [path to uuencode])
 
 AC_CACHE_CHECK([for wc that supports --lines], [ac_cv_path_WC],
   [AC_PATH_PROGS_FEATURE_CHECK([WC], [wc gwc],
@@ -145,44 +93,29 @@ AC_CACHE_CHECK([for wc that supports --lines], [ac_cv_path_WC],
     [AC_MSG_ERROR([could not find wc that supports --lines])])])
 AC_SUBST([WC], [$ac_cv_path_WC])
 
-AC_ARG_VAR([WGET], [wget])
-AC_CHECK_PROGS([WGET], [wget], [no])
-AS_IF([test "x$WGET" = xno],
-      [AC_MSG_ERROR([could not find wget])])
-
-AC_ARG_VAR([XXD], [xxd])
-AC_CHECK_PROGS([XXD], [xxd], [no])
-AS_IF([test "x$XXD" = xno],
-      [AC_MSG_ERROR([could not find xxd; install vim-common])])
-
-AC_ARG_VAR([ZCAT], [zcat])
-AC_CHECK_PROGS([ZCAT], [zcat], [no])
-AS_IF([test "x$ZCAT" = xno],
-      [AC_MSG_ERROR([could not find zcat])])
+QH_REQUIRE_PROG([WGET], [wget], [path to wget])
+QH_REQUIRE_PROG([XXD], [xxd], [path to xxd])
+QH_REQUIRE_PROG([ZCAT], [zcat], [path to zcat])
 
 # Checks for files.
 
 # Additional options
+QH_VAR_ENSURE([GIT_BASE_URL],
+              [Base URL for git downloads],
+              ['http://www.kernel.org/pub/software/scm'])
 
-# option to specify git source base url
-DET_ARG_WITH([git_base_url], [http://www.kernel.org/pub/software/scm])
-AC_SUBST([GIT_BASE_URL], [$with_git_base_url])
-
-# option to specify GNU tool source base url
-DET_ARG_WITH([gnu_base_url], [http://ftp.gnu.org/gnu])
-AC_SUBST([GNU_BASE_URL], [$with_gnu_base_url])
+QH_VAR_ENSURE([GNU_BASE_URL],
+              [Base URL for GNU downloads],
+              ['http://ftp.gnu.org/gnu'])
 
 # Option to enable minicom
-DET_ARG_ENABLE([minicom], [no])
+QH_ARG_ENABLE([minicom], [yes])
 AM_CONDITIONAL([ENABLE_MINICOM],
                [test "x$enable_minicom" = xyes])
 
 # Check for minicom if minicom is enabled
 AM_COND_IF([ENABLE_MINICOM],
-           [AC_ARG_VAR([MINICOM], [minicom])
-            AC_CHECK_PROGS([MINICOM], [minicom], [no])
-            AS_IF([test "x$MINICOM" = xno],
-                  [AC_MSG_ERROR([could not find minicom])])])
+           [QH_REQUIRE_PROG([MINICOM], [minicom], [path to minicom])])
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile
