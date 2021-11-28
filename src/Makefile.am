@@ -35,7 +35,6 @@ pkgdata_DATA += $(make_data)
 
 make_scripts = dl-git \
 	       dl-gnu-tool \
-	       gen-pass \
 	       get-autotools \
 	       get-git \
 	       get-gnu-tool \
@@ -46,10 +45,16 @@ make_scripts = dl-git \
 	       weather \
 	       ycm-conan-init
 
+if HAVE_BASENC
+make_scripts += gen-pass
+endif
+
 if ENABLE_MINICOM
 make_scripts += mini
 endif
-EXTRA_DIST += mini.in
+
+EXTRA_DIST += gen-pass.in \
+	      mini.in
 
 bin_SCRIPTS += $(make_scripts)
 
@@ -61,8 +66,8 @@ make_sources = $(addsuffix .in,$(make_scripts) $(make_data))
 EXTRA_DIST += $(make_sources)
 
 # sed command to build data/scripts
-EDIT = -e 's:@ASCII85[@]:$(ASCII85):g' \
-       -e 's:@BASE64[@]:$(BASE64):g' \
+EDIT = -e 's:@BASE64[@]:$(BASE64):g' \
+       -e 's:@BASENC[@]:$(BASENC):g' \
        -e 's:@ENV[@]:$(ENV):g' \
        -e 's:@CONAN[@]:$(CONAN):g' \
        -e 's:@CURL[@]:$(CURL):g' \

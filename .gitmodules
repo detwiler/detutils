@@ -1,0 +1,10 @@
+[submodule "gnulib"]
+	path = .gnulib
+	url = https://github.com/coreutils/gnulib.git
+	shallow = true
+	branch = master
+[submodule "quickhatch-autotools"]
+	path = .quickhatch
+	url = https://github.com/quickhatch/quickhatch-autotools.git
+	shallow = true
+	branch = master

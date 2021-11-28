@@ -29,4 +29,4 @@ bad="-name SCCS -o -name BitKeeper -o -name .svn -o -name CVS -o -name .pc"
 ( find $dirs -follow \( $bad \) -prune -o \( -name "*.[ch]" -o \
   -name "*.[ch]pp" -o -name "*.cc" -o -name "*.hh" \) -print ) >| cscope.files
 
-@CSCOPEPRG@ -b -q
+@CSCOPE_PATH@ -b -q

@@ -1,0 +1,22 @@
+# http://www.gnu.org/software/autoconf
+
+/config.guess
+/config.sub
+/depcomp
+/install-sh
+/missing
+
+# http://www.gnu.org/software/automake
+
+/mdate-sh
+
+# http://www.gnu.org/software/texinfo
+
+/texinfo.tex
+
+# https://www.gnu.org/software/gnulib
+
+/do-release-commit-and-tag
+/git-version-gen
+/gitlog-to-changelog
+/vc-list-files

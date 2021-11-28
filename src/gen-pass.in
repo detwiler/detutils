@@ -110,7 +110,7 @@ if [[ -n $base64 ]]; then
 fi
 
 if [[ -n $ascii85 ]]; then
-  encode=@ASCII85@
+  encode='@BASENC@ --z85'
 fi
 
 shacmd=@SHA1SUM@
@@ -180,7 +180,14 @@ fi
 if [[ -n $uuencode ]]; then
   @UUENCODE@ $output /dev/stdout | sed -e '1d' -e '$d' | @TR@ --delete '\n'
 elif [[ -n $encode ]]; then
-  $encode --wrap=0 $output
+  # input for Ascii85 encoding must be multiple of 4
+  if [[ -n $ascii85 ]]; then
+    length=$(@STAT@ --format='%s' $output)
+    remainder=$(( $length % 4 ))
+  else
+    remainder=0
+  fi
+  @HEAD@ --bytes=-$remainder $output | $encode --wrap=0
 else
   cat $output
 fi
