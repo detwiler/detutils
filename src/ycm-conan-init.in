@@ -44,23 +44,24 @@ function usage()
 } # usage
 
 me=$(basename $0)
-COMP_DB_DIR_DEFAULT='.ycm-conan-build'
+COMP_DB_DIR_DEFAULT='.ycm-build'
 YCM_CONF='.ycm_extra_conf.py'
 
-short_opts='b:hv'
-long_opts='build:,help,version'
+short_opts='b:p:hv'
+long_opts='build:profile:,help,version'
 
 if ! options=$(getopt --options $short_opts --longoptions $long_opts --name $me -- "$@"); then
   die "Option parsing failed"
 fi
 eval set -- "$options"
 
-conan_build_opts=()
+conan_opts=()
 
 while true; do
   case "$1" in
     -h|--help) usage; exit 0 ;;
-    -b|--build) conan_build_opts+=("--build $2"); shift 2 ;;
+    -b|--build) conan_opts+=("--build $2"); shift 2 ;;
+    -p|--profile) conan_opts+=("--profile $2"); shift 2 ;;
     -v|--version) print_version $me; exit 0 ;;
     --) shift; break ;;
     *) die 'Option parsing failed' ;;
@@ -70,7 +71,7 @@ done
 comp_db_dir=${1:-${COMP_DB_DIR_DEFAULT}}
 
 # run conan install
-if ! @CONAN@ install ${conan_build_opts[@]} --install-folder $comp_db_dir .; then
+if ! @CONAN@ install ${conan_opts[@]} --install-folder $comp_db_dir .; then
   die 'conan install command failed'
 fi
 
