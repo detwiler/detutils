@@ -19,6 +19,7 @@ CLEANFILES = $(gvg_version) \
 
 EXTRA_DIST = $(gvg_version) \
 	     m4/gnulib-cache.m4 \
+	     $(pkg_name) \
 	     README.md
 
 $(gvg_version):
