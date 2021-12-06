@@ -59,9 +59,6 @@ case $ID in
         $SUDO apk add $pkgs_alpine_edge --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing
         ;;
     centos)
-        $SUDO dnf --assumeyes install $pkgs_common $pkgs_centos
-        ;;
-    centos)
         case $VERSION_ID in
             8)
                 epel_repo=powertools
