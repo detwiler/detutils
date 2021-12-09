@@ -48,7 +48,7 @@ COMP_DB_DIR_DEFAULT='.ycm-build'
 YCM_CONF='.ycm_extra_conf.py'
 
 short_opts='b:p:hv'
-long_opts='build:profile:,help,version'
+long_opts='build:,profile:,help,version'
 
 if ! options=$(getopt --options $short_opts --longoptions $long_opts --name $me -- "$@"); then
   die "Option parsing failed"
