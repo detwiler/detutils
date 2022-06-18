@@ -11,24 +11,17 @@ jobs:
       matrix:
         include:
           - image: alpine:latest
-            vm-box-name: alpine
           - image: centos:latest
-            vm-box-name: centos
           - image: quay.io/centos/centos:stream9
-            vm-box-name: centos
           - image: fedora:latest
-            vm-box-name: fedora
           - image: ubuntu:rolling
-            vm-box-name: ubuntu
           - image: ubuntu:latest
-            vm-box-name: ubuntu
 
     env:
       DEBIAN_FRONTEND: noninteractive
       GNULIB_SRCDIR: "$HOME/.gnulib"
       GNULIB_URL: 'https://github.com/coreutils/gnulib.git'
       USER: ${{ github.repository_owner }}
-      VM_BOX_NAME: ${{ matrix.vm-box-name }}
 
     steps:
       - name: Install Pre-Checkout Tools
