@@ -28,7 +28,12 @@ AM_CONDITIONAL([HAVE_BASENC],
 
 QH_REQUIRE_PROG([BASE64], [base64 gbase64], [path to base64])
 QH_REQUIRE_PROG([CONAN], [conan], [path to conan])
-QH_REQUIRE_PROG([CSCOPE_PATH], [cscope], [path to cscope])
+
+AC_ARG_VAR([CSCOPE_PATH], [path to cscope])
+AC_PATH_PROG([CSCOPE_PATH], [cscope], [no])
+AM_CONDITIONAL([HAVE_CSCOPE], [test "x$CSCOPE_PATH" != xno])
+AM_COND_IF([HAVE_CSCOPE], [AC_CONFIG_FILES([src/makecscope])])
+
 QH_REQUIRE_PROG([CURL], [curl], [path to curl])
 
 AC_CACHE_CHECK([for cut that supports --delimiter], [ac_cv_path_CUT],
@@ -84,7 +89,10 @@ AC_CACHE_CHECK([for tr that supports --delete], [ac_cv_path_TR],
     [AC_MSG_ERROR([could not find tr that supports --delete])])])
 AC_SUBST([TR], [$ac_cv_path_TR])
 
-QH_REQUIRE_PROG([UUENCODE], [uuencode], [path to uuencode])
+AC_ARG_VAR([UUENCODE], [path to uuencode])
+AC_CHECK_PROGS([UUENCODE], [uuencode], [no])
+AM_CONDITIONAL([HAVE_UUENCODE],
+               [test "x$UUENCODE" != xno])
 
 AC_CACHE_CHECK([for wc that supports --lines], [ac_cv_path_WC],
   [AC_PATH_PROGS_FEATURE_CHECK([WC], [wc gwc],
@@ -108,19 +116,14 @@ QH_VAR_ENSURE([GNU_BASE_URL],
               [Base URL for GNU downloads],
               ['http://ftp.gnu.org/gnu'])
 
-# Option to enable minicom
-QH_ARG_ENABLE([minicom], [yes])
-AM_CONDITIONAL([ENABLE_MINICOM],
-               [test "x$enable_minicom" = xyes])
-
-# Check for minicom if minicom is enabled
-AM_COND_IF([ENABLE_MINICOM],
-           [QH_REQUIRE_PROG([MINICOM], [minicom], [path to minicom])])
+AC_ARG_VAR([MINICOM], [path to minicom])
+AC_CHECK_PROGS([MINICOM], [minicom], [no])
+AM_CONDITIONAL([HAVE_MINICOM],
+               [test "x$MINICOM" != xno])
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile
                  src/config-bash
-                 src/makecscope
                  src/script-functions
                  ])
 
