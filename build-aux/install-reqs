@@ -55,6 +55,12 @@ sharutils
 vim-common
 '
 
+pkgs_rhel='
+gnupg2
+python3-pip
+vim-common
+'
+
 test -r $OS_RELEASE_FILE || exit
 
 . $OS_RELEASE_FILE
@@ -87,7 +93,7 @@ case $ID in
         ;;
     rhel)
         $SUDO dnf --assumeyes --refresh install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
-        $SUDO dnf --assumeyes --refresh install --allowerasing $pkgs_common
+        $SUDO dnf --assumeyes --refresh install --allowerasing $pkgs_common $pkgs_rhel
         ;;
 esac
 
