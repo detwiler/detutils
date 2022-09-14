@@ -11,24 +11,17 @@ jobs:
       matrix:
         include:
           - image: alpine:latest
-            vm-box-name: alpine
-          - image: centos:latest
-            vm-box-name: centos
+          - image: quay.io/centos/centos:stream8
           - image: quay.io/centos/centos:stream9
-            vm-box-name: centos
           - image: fedora:latest
-            vm-box-name: fedora
           - image: ubuntu:rolling
-            vm-box-name: ubuntu
           - image: ubuntu:latest
-            vm-box-name: ubuntu
 
     env:
       DEBIAN_FRONTEND: noninteractive
       GNULIB_SRCDIR: "$HOME/.gnulib"
       GNULIB_URL: 'https://github.com/coreutils/gnulib.git'
       USER: ${{ github.repository_owner }}
-      VM_BOX_NAME: ${{ matrix.vm-box-name }}
 
     steps:
       - name: Install Pre-Checkout Tools
@@ -47,7 +40,9 @@ jobs:
 
       # see: https://github.com/actions/checkout/issues/290
       - name: Fetch Tags
-        run: git fetch --force --tags
+        run: |
+          git config --global --add safe.directory $(pwd)
+          git fetch --force --tags
 
       - name: Configure Gnulib Cache Key
         run: echo "GNULIB_CACHE_KEY=`git submodule status .gnulib | sed -re 's/^.([0-9,a-f]{1,}) .*$/\1/'`" >>$GITHUB_ENV
