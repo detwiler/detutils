@@ -9,8 +9,6 @@ curl
 dos2unix
 file
 gzip
-minicom
-sharutils
 wget
 '
 
@@ -21,6 +19,8 @@ conan
 pkgs_alpine='
 gnupg
 py3-pip
+minicom
+sharutils
 xxd
 '
 
@@ -31,22 +31,28 @@ cscope
 pkgs_centos='
 cscope
 gnupg2
+minicom
 python3-pip
+sharutils
 vim-common
+'
+
+pkgs_debian='
+cscope
+gpg
+minicom
+python3-pip
+sharutils
+xxd
 '
 
 pkgs_fedora='
 cscope
 gnupg2
+minicom
 python3-pip
+sharutils
 vim-common
-'
-
-pkgs_ubuntu='
-cscope
-gpg
-python3-pip
-xxd
 '
 
 test -r $OS_RELEASE_FILE || exit
@@ -55,6 +61,7 @@ test -r $OS_RELEASE_FILE || exit
 
 case $ID in
     alpine)
+        $SUDO apk update
         $SUDO apk add $pkgs_common $pkgs_alpine
         $SUDO apk add $pkgs_alpine_edge --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing
         ;;
@@ -69,13 +76,18 @@ case $ID in
         esac
         $SUDO dnf --assumeyes config-manager --set-enabled $extra_repos
         $SUDO dnf --assumeyes --refresh install epel-release epel-next-release
-        $SUDO dnf --assumeyes install --allowerasing $pkgs_common $pkgs_centos
+        $SUDO dnf --assumeyes --refresh install --allowerasing $pkgs_common $pkgs_centos
+        ;;
+    debian|ubuntu)
+        $SUDO apt-get --assume-yes update
+        $SUDO apt-get --assume-yes install $pkgs_common $pkgs_debian
         ;;
     fedora)
-        $SUDO dnf --assumeyes install $pkgs_common $pkgs_fedora
+        $SUDO dnf --assumeyes --refresh install $pkgs_common $pkgs_fedora
         ;;
-    ubuntu)
-        $SUDO apt-get --assume-yes install $pkgs_common $pkgs_ubuntu
+    rhel)
+        $SUDO dnf --assumeyes --refresh install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+        $SUDO dnf --assumeyes --refresh install --allowerasing $pkgs_common
         ;;
 esac
 
