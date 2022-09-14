@@ -17,7 +17,9 @@ conf_data = config-bash \
 
 pkgdata_DATA = $(conf_data)
 
+if HAVE_CSCOPE
 conf_scripts = makecscope
+endif
 
 bin_SCRIPTS = $(conf_scripts)
 
@@ -46,10 +48,12 @@ make_scripts = dl-git \
 	       ycm-conan-init
 
 if HAVE_BASENC
+if HAVE_UUENCODE
 make_scripts += gen-pass
 endif
+endif
 
-if ENABLE_MINICOM
+if HAVE_MINICOM
 make_scripts += mini
 endif
 

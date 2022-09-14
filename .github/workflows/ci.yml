@@ -13,13 +13,16 @@ jobs:
           - image: alpine:latest
           - image: quay.io/centos/centos:stream8
           - image: quay.io/centos/centos:stream9
+          - image: debian:latest
           - image: fedora:latest
-          - image: ubuntu:rolling
+          - image: registry.access.redhat.com/ubi9/ubi
+          - image: ubuntu:20.04
           - image: ubuntu:latest
+          - image: ubuntu:rolling
 
     env:
       DEBIAN_FRONTEND: noninteractive
-      GNULIB_SRCDIR: "$HOME/.gnulib"
+      GNULIB_REFDIR: "$HOME/.gnulib"
       GNULIB_URL: 'https://github.com/coreutils/gnulib.git'
       USER: ${{ github.repository_owner }}
 
@@ -29,8 +32,8 @@ jobs:
           . /etc/os-release
           case $ID in
               alpine) apk update && apk upgrade && apk add git tar;;
-              centos|fedora) dnf -y upgrade && dnf -y install dnf-plugins-core git-core which;;
-              ubuntu) apt-get -y update && apt-get -y upgrade && apt-get -y install git;;
+              centos|fedora|rhel) dnf -y upgrade && dnf -y install dnf-plugins-core git-core which;;
+              debian|ubuntu) apt-get -y update && apt-get -y upgrade && apt-get -y install git;;
           esac
 
       - name: Checkout
@@ -53,7 +56,7 @@ jobs:
         env:
           cache-name: cache-gnulib
         with:
-          path: ${{ env.GNULIB_SRCDIR }}
+          path: ${{ env.GNULIB_REFDIR }}
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ env.GNULIB_CACHE_KEY }}
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}-
@@ -61,11 +64,11 @@ jobs:
       - name: Fetch Upstream Gnulib Repository
         if: steps.cache-gnulib.outputs.cache-hit != 'true'
         run: |
-          if [ -d $GNULIB_SRCDIR ]; then
-              cd $GNULIB_SRCDIR
+          if [ -d $GNULIB_REFDIR ]; then
+              cd $GNULIB_REFDIR
               git pull --ff-only
           else
-              git clone $GNULIB_URL $GNULIB_SRCDIR
+              git clone $GNULIB_URL $GNULIB_REFDIR
           fi
 
       - name: Bootstrap
